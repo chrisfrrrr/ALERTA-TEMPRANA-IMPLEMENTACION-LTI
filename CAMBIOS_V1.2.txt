@@ -1,0 +1,13 @@
+AVE | Corrección v1.2 — Asignación de asesor de bienestar
+
+1. Se corrigió la lectura del SIS User ID de Canvas. En muchas respuestas el campo sis_user_id aparece en el nivel principal de la inscripción y no dentro del objeto user.
+2. Se agregó una consulta complementaria al directorio de estudiantes del curso cuando Canvas no devuelve carné, login o correo suficientes.
+3. La vinculación con la base de bienestar ahora intenta, en este orden:
+   - carné institucional;
+   - correo electrónico;
+   - nombre completo normalizado;
+   - nombre reordenado, para formatos como "Apellido, Nombre".
+4. Se normalizan tildes, espacios, saltos de línea, prefijos como cas y formatos numéricos terminados en .0.
+5. La aplicación muestra cuántos estudiantes fueron vinculados y cuántos recibieron asesor.
+6. Configuración incluye un diagnóstico del último análisis y permite descargar los estudiantes que no coincidieron con la base.
+7. Se añadieron pruebas automatizadas para carné SIS, nombres reordenados y estudiantes sin coincidencia.

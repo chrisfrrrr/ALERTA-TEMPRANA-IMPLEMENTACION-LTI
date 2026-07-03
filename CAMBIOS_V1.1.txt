@@ -1,0 +1,33 @@
+AVE | Sistema de alerta temprana — actualización 1.1
+
+Correcciones realizadas:
+
+1. Se eliminó la salida técnica que aparecía junto al estado de Supabase.
+   El origen era una expresión condicional que Streamlit interpretaba como
+   contenido visible. Ahora solo se muestra un estado breve y profesional.
+
+2. Se reforzó la conexión con Canvas:
+   - tiempo de lectura ampliado;
+   - reintentos automáticos para consultas GET;
+   - manejo de límites temporales y errores del servidor;
+   - mensajes de error comprensibles, sin mostrar HTTPSConnectionPool;
+   - sesiones HTTP reutilizables.
+
+3. La consulta de entregas ahora se hace por lotes de hasta 25 estudiantes y
+   40 actividades, en lugar de solicitar todas las entregas en una respuesta
+   pesada. También se eliminaron datos duplicados de usuario y actividad que
+   no eran necesarios en esa respuesta.
+
+4. Se agregó progreso por lotes durante la consulta de entregas.
+
+5. Un fallo temporal de Supabase ya no cancela el análisis de Canvas. El
+   resultado permanece disponible durante la sesión y el historial puede
+   actualizarse posteriormente.
+
+6. Se eliminó la exposición de trazas técnicas en la interfaz. Los detalles
+   quedan únicamente en los logs de Streamlit.
+
+Validaciones realizadas:
+- Compilación completa del proyecto.
+- 9 pruebas automatizadas aprobadas.
+- Inicio y verificación de salud de Streamlit correctos.

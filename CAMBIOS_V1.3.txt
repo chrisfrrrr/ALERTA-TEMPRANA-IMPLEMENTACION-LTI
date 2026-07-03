@@ -1,0 +1,22 @@
+AVE Alerta Temprana v1.3
+
+Cambios principales:
+- Se agregó inicio de sesión con Canvas OAuth2.
+- Se eliminó el ingreso manual de token desde la pantalla de conexión.
+- Se agregó soporte para Developer Key mediante CANVAS_OAUTH_CLIENT_ID, CANVAS_OAUTH_CLIENT_SECRET y CANVAS_OAUTH_REDIRECT_URI.
+- El access token vive únicamente en la sesión activa de Streamlit; no se almacena en Supabase.
+- Se agregó tabla authorized_users para controlar roles internos.
+- Se agregaron roles: admin, asesor_academico, asesor_bienestar y consulta.
+- Se agregó auditoría para login, carga de cursos, análisis, mensajes, sincronización de respuestas y derivaciones.
+- Se agregó pestaña Configuración > Usuarios y OAuth2.
+- Se agregó pestaña Configuración > Auditoría.
+- Se amplió sql/schema.sql con authorized_users, nuevos campos de auditoría y actor del análisis.
+- Se actualizó README y secrets.toml.example.
+
+Variables nuevas:
+CANVAS_OAUTH_CLIENT_ID
+CANVAS_OAUTH_CLIENT_SECRET
+CANVAS_OAUTH_REDIRECT_URI
+CANVAS_OAUTH_SCOPES
+ALLOW_DEMO_MODE
+REQUIRE_AUTHORIZED_USER

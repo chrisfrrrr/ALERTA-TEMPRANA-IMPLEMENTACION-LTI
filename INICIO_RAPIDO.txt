@@ -1,0 +1,11 @@
+AVE — INICIO RÁPIDO
+
+1. Abra una terminal dentro de esta carpeta.
+2. Instale dependencias:
+   python -m pip install -r requirements.txt
+3. Ejecute la app:
+   python -m streamlit run app.py
+4. La primera vez, utilice el modo Demostración.
+5. Para Supabase, ejecute sql/schema.sql y configure .streamlit/secrets.toml.
+
+En Windows también puede ejecutar run_app.bat después de instalar las dependencias.
