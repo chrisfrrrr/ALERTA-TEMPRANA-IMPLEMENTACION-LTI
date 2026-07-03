@@ -26,6 +26,7 @@ class OAuthConfig:
     scopes: list[str]
     require_authorized_user: bool = False
     allow_demo_mode: bool = True
+    allow_manual_token_mode: bool = True
 
     @property
     def enabled(self) -> bool:
@@ -72,6 +73,7 @@ def load_oauth_config() -> OAuthConfig:
         scopes=_secret_list("CANVAS_OAUTH_SCOPES", []),
         require_authorized_user=_secret_bool("REQUIRE_AUTHORIZED_USER", False),
         allow_demo_mode=_secret_bool("ALLOW_DEMO_MODE", True),
+        allow_manual_token_mode=_secret_bool("ALLOW_MANUAL_TOKEN_MODE", True),
     )
 
 
@@ -175,6 +177,7 @@ def current_actor() -> dict[str, Any]:
         "email": profile.get("primary_email") or auth_user.get("email"),
         "name": profile.get("name") or auth_user.get("full_name") or st.session_state.get("academic_advisor"),
         "role": st.session_state.get("user_role") or auth_user.get("role") or "sin_rol",
+        "auth_method": st.session_state.get("auth_method") or "desconocido",
     }
 
 
@@ -242,6 +245,44 @@ def complete_oauth_login(config: OAuthConfig, db: DatabaseService) -> bool:
     return True
 
 
+def complete_manual_token_login(canvas_url: str, token: str, db: DatabaseService, config: OAuthConfig) -> bool:
+    """Valida un token personal de Canvas sin almacenarlo fuera de la sesión activa."""
+    if not config.allow_manual_token_mode:
+        raise AuthError("El modo token manual está deshabilitado para esta aplicación.")
+    canvas_url = (canvas_url or config.canvas_url or "https://uvg.instructure.com").strip().rstrip("/")
+    token = (token or "").strip()
+    if not token:
+        raise AuthError("Ingrese un token de Canvas para continuar.")
+    try:
+        canvas = CanvasService(canvas_url, token)
+        result = canvas.test_connection()
+    except CanvasAPIError as exc:
+        raise AuthError(str(exc)) from exc
+    if not result.ok or not result.profile:
+        raise AuthError(result.message or "No fue posible validar el token de Canvas.")
+
+    authorized = ensure_authorized(db, result.profile, config)
+    st.session_state.demo_mode = False
+    st.session_state.canvas_url = canvas_url
+    st.session_state.canvas_token = token
+    st.session_state.oauth_tokens = {}
+    st.session_state.canvas_profile = result.profile
+    st.session_state.auth_user = authorized
+    st.session_state.user_role = authorized.get("role") or "asesor_academico"
+    st.session_state.authenticated = True
+    st.session_state.auth_method = "manual_token"
+
+    if db.connected:
+        db.upsert_user_login(result.profile, authorized)
+        db.log_audit(
+            action="login_canvas_manual_token",
+            entity_type="session",
+            actor=current_actor(),
+            payload={"auth_method": "manual_token", "role": st.session_state.user_role},
+        )
+    return True
+
+
 def logout(db: DatabaseService | None = None) -> None:
     if db and db.connected:
         try:
@@ -255,6 +296,7 @@ def logout(db: DatabaseService | None = None) -> None:
         "auth_user",
         "user_role",
         "authenticated",
+        "auth_method",
         "courses",
         "sections",
         "analysis_df",

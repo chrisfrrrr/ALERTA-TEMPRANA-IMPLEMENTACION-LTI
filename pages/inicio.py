@@ -35,7 +35,10 @@ token = st.session_state.get("canvas_token", "")
 if not demo_mode:
     try:
         token = get_valid_canvas_token(oauth_config)
-        canvas_url = oauth_config.canvas_url
+        if st.session_state.get("auth_method") != "manual_token":
+            canvas_url = oauth_config.canvas_url
+        else:
+            canvas_url = st.session_state.get("canvas_url", oauth_config.canvas_url)
         st.session_state.canvas_token = token
         st.session_state.canvas_url = canvas_url
     except Exception:
@@ -47,7 +50,8 @@ with col_mode:
     if demo_mode:
         st.success("Datos simulados activos")
     else:
-        st.success("Canvas conectado mediante OAuth2")
+        method = st.session_state.get("auth_method")
+        st.success("Canvas conectado mediante OAuth2" if method == "canvas_oauth" else "Canvas conectado con token manual seguro")
     role = st.session_state.get("user_role") or "sin_rol"
     st.caption(f"Rol interno: {role}")
 
@@ -62,7 +66,10 @@ with col_canvas:
             st.success("Cursos cargados.")
     else:
         st.text_input("URL de Canvas", value=canvas_url, disabled=True)
-        st.caption("La sesión proviene de Canvas OAuth2; no se solicita ni se muestra token personal.")
+        if st.session_state.get("auth_method") == "manual_token":
+            st.caption("Sesión validada con token manual seguro. El token no se muestra ni se almacena en Supabase.")
+        else:
+            st.caption("La sesión proviene de Canvas OAuth2; no se solicita ni se muestra token personal.")
         if profile:
             st.success(f"Sesión activa como {profile.get('name') or profile.get('short_name')}")
         if st.button("Cargar cursos desde Canvas", type="primary", width="stretch"):
@@ -99,7 +106,7 @@ st.subheader("Parámetros del corte")
 
 courses = st.session_state.get("courses") or (demo_courses() if demo_mode else [])
 if not courses:
-    st.info("Primero cargue los cursos desde Canvas OAuth2 o entre en modo demostración desde Acceso institucional.")
+    st.info("Primero cargue los cursos desde Canvas o entre en modo demostración desde Acceso institucional.")
     st.stop()
 
 course_options = {

@@ -172,3 +172,20 @@ Las pruebas verifican, entre otros casos, la distribución de 15 y 17 actividade
 ## Actualización 1.3: seguridad institucional
 
 Esta versión incorpora autenticación Canvas OAuth2, elimina el campo visible de token manual, agrega roles internos en Supabase y registra auditoría de las acciones principales. Para producción, use `REQUIRE_AUTHORIZED_USER=true` y registre previamente a los usuarios autorizados.
+
+## Modo token manual seguro para piloto
+
+La versión híbrida permite trabajar sin Developer Key de TI mientras se valida la aplicación. En `Acceso institucional` utilice la pestaña **Token manual seguro**. El token se valida con Canvas y queda únicamente en la sesión activa de Streamlit; no se almacena en Supabase.
+
+Para habilitarlo en los secretos:
+
+```toml
+ALLOW_MANUAL_TOKEN_MODE = true
+```
+
+Para producción institucional se recomienda cambiarlo a:
+
+```toml
+ALLOW_MANUAL_TOKEN_MODE = false
+```
+

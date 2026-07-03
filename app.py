@@ -26,6 +26,7 @@ def initialize_state() -> None:
     defaults = {
         "demo_mode": _default_demo_mode(),
         "authenticated": False,
+        "auth_method": None,
         "auth_user": None,
         "user_role": None,
         "oauth_tokens": {},
@@ -59,7 +60,8 @@ config = load_oauth_config()
 if st.session_state.get("authenticated") and not st.session_state.get("demo_mode", False):
     try:
         st.session_state.canvas_token = get_valid_canvas_token(config)
-        st.session_state.canvas_url = config.canvas_url
+        if st.session_state.get("auth_method") != "manual_token":
+            st.session_state.canvas_url = config.canvas_url
     except Exception:
         st.session_state.authenticated = False
         st.session_state.canvas_token = ""

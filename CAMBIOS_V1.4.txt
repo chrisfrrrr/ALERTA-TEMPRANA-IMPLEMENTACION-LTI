@@ -1,0 +1,9 @@
+# Cambios v1.4 - Modo híbrido OAuth2 + token manual seguro
+
+- Se agregó una pestaña de acceso “Token manual seguro” en Acceso institucional.
+- El token manual se valida contra Canvas y solo permanece en la sesión activa de Streamlit.
+- No se guarda el token en Supabase ni en archivos descargables.
+- Se agregó la variable ALLOW_MANUAL_TOKEN_MODE para activar o desactivar este modo.
+- La aplicación mantiene OAuth2 como modo recomendado para producción institucional.
+- Se actualizó la pantalla de Conexión y análisis para indicar si la conexión proviene de OAuth2 o token manual seguro.
+- Se registra auditoría de login manual cuando Supabase está conectado.
